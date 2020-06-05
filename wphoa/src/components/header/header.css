@@ -1,0 +1,38 @@
+div.MuiTabs-root {
+    background-color: #282c34;
+}
+
+span.PrivateTabIndicator-colorSecondary-4 {
+    background-color: lightgreen;
+}
+
+.logo {
+    position: absolute;
+    /*top: 50%;*/
+    /*left: 50%;*/
+    /*top: 0;*/
+    /*bottom: 0;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*margin-top: 45px;*/
+    /*width: 500px;*/
+    /*height: 500px;*/
+    /*margin-top: -250px; !* Half the height *!*/
+    /*margin-left: -250px; !* Half the width *!*/
+}
+
+button.MuiButton-containedPrimary {
+    background-color: #282c34;
+
+}
+
+.loginButton {
+    width: 100px;
+    height: 36px;
+    border: none;
+    line-height: 36px;
+    white-space: nowrap;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+}
