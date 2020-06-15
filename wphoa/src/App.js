@@ -22,8 +22,8 @@ function App() {
             <Route exact path="/homepage"><Homepage isSignedIn={isSignedIn} setIsSignedIn={setIsSignedIn}/></Route>
             <Route exact path="/events"><EventCalendar/></Route>
             <Route exact path="/contact"><Contact/></Route>
-            <Route exact path="/homeowners"><Homeowners isSignedIn={isSignedIn} setIsSignedIn={setIsSignedIn}/></Route>
-            <Route exact path="/documents"><Documents isSignedIn={isSignedIn} setIsSignedIn={setIsSignedIn}/></Route>
+            <Route exact path="/homeowners"><Homeowners isSignedIn={isSignedIn} /></Route>
+            <Route exact path="/documents"><Documents isSignedIn={isSignedIn} /></Route>
           </Switch>
         </Router>
 
