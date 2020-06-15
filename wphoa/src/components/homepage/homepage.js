@@ -1,18 +1,29 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './homepage.css';
-import wpImage from './wpImage.jpg'
+import Background from './newwp.jpeg';
 import Container from '@material-ui/core/Container';
+import Login from '../login/login'
+import PropTypes from 'prop-types';
 
-// const containerStyle = {
-//     height: '700px',
-// }
+const Homepage = (props) => {
 
-const Homepage = () => {
+  const { isSignedIn, setIsSignedIn, ...other } = props;
+
+  if (!isSignedIn) {
     return (
-        // <Container fluid="xl" style={containerStyle}>
-            <img src={wpImage} alt="WindsorParkImage"/>
-        // </Container>
+      <Login/>
     );
+  }
+  return (
+    <Container maxWidth="med">
+      <img alt='WindsorPark' src={Background}/>
+    </Container>
+  );
+}
+
+Homepage.propTypes = {
+  isSignedIn: PropTypes.bool,
+  setIsSignedIn: PropTypes.func
 }
 
 export default Homepage;

@@ -6,6 +6,12 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import TextField from '@material-ui/core/TextField';
 import Button from "@material-ui/core/Button";
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import * as firebase from "firebase/app";
+import 'firebase/firestore';
+
+const firestore = firebase.firestore();
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,59 +30,110 @@ const useStyles = makeStyles((theme) => ({
     width:'100%',
     fontSize: 5,
   },
+  button: {
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  }
 }));
 
-const Contact = () => {
-  const [values, setValues] = useState({});
+const initVals = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  message: ""
+}
 
-  const handleSubmit = (event) => {
-    if (event) event.preventDefault();
-    // callback();
-  };
-
-  const handleChange = (event) => {
-    event.persist();
-    setValues(values => ({ ...values, [event.target.name]: event.target.value }));
-  };
-
+const Contact = (props) => {
   const classes = useStyles();
+  const [state, setState] = React.useState(initVals);
 
-  return (
-    <div className={classes.root}>
-      <Grid container>
-        <Grid item sm={3}/>
-        <Grid item sm={6}>
-          <Card variant="outlined">
-            <CardHeader className={classes.title} title="Contact WPHOA"/>
-            <CardContent className={classes.content}>
-              <div className={classes.item}>
-                <TextField className={classes.text} name='firstName' label="First Name"
-                           onChange={handleChange} variant="outlined" />
-              </div>
-              <div className={classes.item}>
-                <TextField className={classes.text} name='lastName' label="Last Name"
-                           onChange={handleChange} variant="outlined" />
-              </div>
-              <div className={classes.item}>
-                <TextField className={classes.text} name='email' label="email" type="email"
-                           onChange={handleChange} variant="outlined" />
-              </div>
-              <div className={classes.item}>
-                <TextField className={classes.text} name='message' label="Message"
-                           onChange={handleChange} variant="outlined" rows='5' multiline />
-              </div>
-              <div className={classes.item}>
-                <Button className='submit' onChange={handleChange} variant="contained" color="primary">
-                    Submit
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addContactMe();
+  };
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setState({
+      ...state,
+      [e.target.name]: value
+    });
+  }
+
+  const resetInputFields = () => {
+    setState(initVals);
+  }
+
+  const addContactMe = () => {
+    firestore
+      .collection("contactMe").add({
+      firstName: state.firstName,
+      lastName: state.lastName,
+      email: state.email,
+      message: state.message
+    })
+      .then(function(docRef) {
+        console.log("Document written with ID: ", docRef.id);
+        resetInputFields();
+        confirm();
+      })
+      .catch(function(error) {
+        console.error("Error adding document: ", error);
+      });
+  };
+
+  const confirm = () => {
+    confirmAlert({
+      customUI: ({onClose}) => {
+        return (
+          <div className='custom-ui' style={{display:'inline-block'}}>
+            <p>Thank you for contacting WPHOA!</p>
+            <button className={classes.button} onClick={onClose}>OK</button>
+          </div>
+        );
+      }
+    });
+  }
+
+    return (
+      <div className={classes.root}>
+        <Grid container>
+          <Grid item sm={3}/>
+          <Grid item sm={6}>
+            <form onSubmit={handleSubmit}>
+
+              <Card variant="outlined">
+                <CardHeader className={classes.title} title="Contact WPHOA"/>
+                <CardContent className={classes.content}>
+                  <div className={classes.item}>
+                    <TextField className={classes.text} name='firstName' label="First Name"
+                               value={state.firstName} onChange={handleChange} variant="outlined"/>
+                  </div>
+                  <div className={classes.item}>
+                    <TextField className={classes.text} name='lastName' label="Last Name"
+                               value={state.lastName} onChange={handleChange} variant="outlined"/>
+                  </div>
+                  <div className={classes.item}>
+                    <TextField className={classes.text} name='email' label="email" type="email"
+                               value={state.email} onChange={handleChange} variant="outlined"/>
+                  </div>
+                  <div className={classes.item}>
+                    <TextField className={classes.text} name='message' label="Message"
+                               value={state.message} onChange={handleChange} variant="outlined" rows='5' multiline/>
+                  </div>
+                  <div className={classes.item}>
+                    <Button type={"submit"}  className='submit' variant="contained" color="primary">
+                      Submit
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </form>
+          </Grid>
+          <Grid item lg={3}/>
         </Grid>
-        <Grid item lg={3}/>
-      </Grid>
-    </div>
-  );
+      </div>
+    );
 }
 
 export default Contact;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -6,24 +6,18 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import * as firebase from "firebase/app";
+import 'firebase/firestore';
+import Homepage from "../homepage/homepage";
 
+const firestore = firebase.firestore();
 const columns = [
     { id: 'lastName', label: 'Last Name', minWidth: 100 },
     { id: 'firstName', label: 'First Name(s)', minWidth: 200 },
     { id: 'lotNumber', label: 'Lot #', minWidth: 75},
     { id: 'address', label: 'Address', minWidth: 200},
     { id: 'email', label: 'email', minWidth: 170},
-];
-
-function createData(lastName, firstName, lotNumber, address, email) {
-    return { lastName, firstName, lotNumber, address, email };
-}
-
-const rows = [
-    createData('Thaman-Foye', ['Theresa','Gary'], 16, '7723 225th St SE'),
-    createData('Beers', ['Janet', 'Mike'], 14, '22425 78th Ave SE'),
 ];
 
 const useStyles = makeStyles({
@@ -35,64 +29,76 @@ const useStyles = makeStyles({
     },
 });
 
-export default function StickyHeadTable() {
+export default function Homeowners(props) {
     const classes = useStyles();
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [homeowners, setHomeowners] = useState([]);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+    useEffect(() => {
+      getHomeowners();
+    });
+
+    const addHomeowners = () => {
+      firestore.collection('/homeowners').doc("Kanz").set({
+        lastName: "Kanz",
+        firstName: ['Melanie', 'Bill'],
+        children: ['Cooper', 'Suzanne', 'Jacob'],
+        email: "kanzdo@gmail.com",
+        phone: "2066537529",
+        address: "432 225th St SE",
+        lotNumber: 13
+      })
+        .then(function() {
+            console.log("Document successfully written!");
+        })
+        .catch(function(error) {
+            console.error("Error writing document: ", error);
+        })
     };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
+    const getHomeowners = () => {
+      firestore
+        .collection('/homeowners')
+        .onSnapshot(
+          snapshot => setHomeowners(snapshot.docs.map(doc => doc.data())),
+          err => console.log(err)
+        )
     };
-
+  if(props.isSignedIn) {
     return (
-        <Paper className={classes.root}>
-            <TableContainer className={classes.container}>
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{ minWidth: column.minWidth }}
-                                >
-                                    {column.label}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                            return (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                    {columns.map((column) => {
-                                        const value = row[column.id];
-                                        return (
-                                            <TableCell key={column.id} align={column.align}>
-                                                {column.format && typeof value === 'number' ? column.format(value) : value}
-                                            </TableCell>
-                                        );
-                                    })}
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onChangePage={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-        </Paper>
-    );
-}
+      <Paper className={classes.root}>
+        <TableContainer className={classes.container}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{minWidth: column.minWidth}}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {homeowners.map((homeowner) => {
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={homeowner.id}>
+                    {columns.map((column) => {
+                      const value = homeowner[column.id];
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {value.toString()}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    )
+  } else return <Homepage/>}

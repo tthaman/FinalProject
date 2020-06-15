@@ -7,12 +7,11 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Homepage from '../homepage/homepage';
-import News from '../news/news';
+import EventCalendar from '../events/eventCalendar';
 import Contact from '../contact/contact';
 import Homeowners from '../homeowners/homeowners';
-
-
-import './header.css';
+import Documents from '../documents/documents';
+import '../header/header.css';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -66,13 +65,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function NavBar() {
+export default function NavBar(props) {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
 
     return (
         <div className={classes.root}>
@@ -82,19 +82,28 @@ export default function NavBar() {
                     value={value}
                     onChange={handleChange}
                 >
-                    <Tab label="Home" {...a11yProps(0)} />
-                    {/*<LinkTab label="Home" href="/homepage" {...a11yProps(0)} />*/}
-                    <LinkTab label="Neighborhood News & Events" href="/news" {...a11yProps(1)} />
-                    <LinkTab label="Contact" href="/contact" {...a11yProps(2)} />
-                    <LinkTab label="Homeowner List" href="/homeowners" {...a11yProps(3)} />
-                    <LinkTab label="Documents & Forms" href="/documents" {...a11yProps(4)} />
+                    <LinkTab label="Home" {...a11yProps(0)} />
+                    <LinkTab label="Event Calendar"  {...a11yProps(1)} />
+                    <LinkTab label="Contact"  {...a11yProps(2)} />
+                    <LinkTab label="Homeowner List"  {...a11yProps(3)} />
+                    <LinkTab label="Documents & Forms"  {...a11yProps(4)} />
                 </Tabs>
             </AppBar>
-            <TabPanel value={value} index={0}><Homepage/></TabPanel>
-            <TabPanel value={value} index={1}><News/></TabPanel>
-            <TabPanel value={value} index={2}><Contact/></TabPanel>
-            <TabPanel value={value} index={3}><Homeowners/></TabPanel>
-            <TabPanel value={value} index={4}>Documents & Forms</TabPanel>
+            <TabPanel value={value} index={0}>
+              <Homepage isSignedIn={props.isSignedIn} setIsSignedIn={props.setIsSignedIn}/>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <EventCalendar/>
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <Contact/>
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+              <Homeowners isSignedIn={props.isSignedIn}/>
+            </TabPanel>
+            <TabPanel value={value} index={4}>
+              <Documents isSignedIn={props.isSignedIn}/>
+            </TabPanel>
         </div>
     );
 }
